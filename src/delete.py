@@ -10,13 +10,14 @@ def main():
 	channel = sys.argv[2]
 	text = sys.argv[3]
 
-	# deleate previous message
+	# delete last message
 	slacker = Slacker(token)
 	id = [c for c in json.loads(str(slacker.channels.list()))["channels"] if c["name"] == channel.replace('#', '')][0]["id"]
 	for mes in json.loads(str(slacker.channels.history(id)))["messages"]:
 		if text in mes["text"]:
 			slacker.chat.delete(id, mes["ts"])
 			print(mes["text"])
+			break
 
 if __name__ == "__main__":
 	main()
