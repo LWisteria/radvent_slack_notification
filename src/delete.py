@@ -8,7 +8,7 @@ import json
 def main():
 	token = sys.argv[1]
 	channel = sys.argv[2]
-	text = sys.argv[3]
+	text = sys.argv[3].decode("utf8")
 
 	# delete last message
 	slacker = Slacker(token)
