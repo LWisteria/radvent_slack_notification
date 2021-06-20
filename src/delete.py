@@ -2,22 +2,29 @@
 #-*- coding:utf-8 -*-
 
 import sys
-from slacker import Slacker
+import slack_sdk
 import json
+import datetime
 
 def main():
 	token = sys.argv[1]
 	channel = sys.argv[2]
-	text = sys.argv[3].decode("utf8")
+	text = sys.argv[3]
+
+	client = slack_sdk.WebClient(token=token);
+
+	t = datetime.datetime.now() - datetime.timedelta(weeks=1)
+	ret = client.conversations_history(channel=channel, oldest=t.timestamp())
+
+	assert ret["ok"] is True
 
 	# delete last message
-	slacker = Slacker(token)
-	id = [c for c in json.loads(str(slacker.channels.list()))["channels"] if c["name"] == channel.replace('#', '')][0]["id"]
-	for mes in json.loads(str(slacker.channels.history(id)))["messages"]:
+	for mes in ret["messages"]:
 		if text in mes["text"]:
-			slacker.chat.delete(id, mes["ts"])
+			client.chat_delete(channel=channel, ts=mes["ts"])
 			print(mes["text"])
 			break
 
 if __name__ == "__main__":
 	main()
+
